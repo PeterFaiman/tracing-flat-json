@@ -1,0 +1,68 @@
+[package]
+name = "tracing-flat-json"
+version = "0.1.0"
+edition = "2021"
+# Earliest supporting expect annotation.
+rust-version = "1.81.0"
+description = "A simple tracing-subscriber Layer emitting newline-delimited JSON."
+repository = "https://github.com/PeterFaiman/tracing-flat-json"
+license = "MIT"
+keywords = ["structured", "logging", "json", "tracing", "subscriber"]
+categories = ["asynchronous", "development-tools::debugging"]
+
+[features]
+default = ["tracing-log"]
+tracing-log = ["dep:tracing-log"]
+tracing-opentelemetry = ["dep:opentelemetry", "dep:tracing-opentelemetry"]
+
+[dependencies]
+itoa = { version = "1", default-features = false }
+serde = { version = "1", default-features = false }
+serde_json = { version = "1", default-features = false, features = ["std"] }
+# UtcDateTime introduced in 0.3.38.
+time = { version = "0.3.38", default-features = false, features = ["formatting"] }
+# Earliest supported by json-subscriber, which is only used for testing, so
+# older versions may be compatible. But tracing 0.1.40 and tracing-subscriber
+# 0.3.18 are nearly 2 years old, so it's fine.
+tracing = { version = "0.1.40", default-features = false }
+# Earliest supporting tracing_core::field::Visit::record_bytes.
+tracing-core = { version = "0.1.33", default-features = false }
+tracing-subscriber = { version = "0.3.18", default-features = false, features = ["fmt", "std"] }
+
+# Same version requirement as tracing-subscriber 0.3.18.
+tracing-log = { version = "0.2.0", default-features = false, optional = true }
+
+# Oldest versions that easily built and passed unit tests.
+opentelemetry = { version = ">=0.25.0", default-features = false, features = ["trace"], optional = true }
+tracing-opentelemetry = { version = ">=0.26.0", default-features = false, optional = true }
+
+[dev-dependencies]
+criterion = { version = "0.7.0", default-features = false }
+json-subscriber = "0.2.6"
+# Use default features for benchmarks.
+tracing-subscriber = { version = "*", features = ["default", "json"] }
+ureq = "3.1.2"
+
+# Test tracing-log.
+log = "0.4.28"
+
+# Test tracing-opentelemetry.
+opentelemetry = { version = "=0.30.0", default-features = false, features = ["trace"] }
+opentelemetry-stdout = { version = "=0.30.0", default-features = false, features = ["trace"] }
+opentelemetry_sdk = { version = "=0.30.0", default-features = false, features = ["trace"] }
+tracing-opentelemetry = { version = "=0.31.0", default-features = false }
+
+[lib]
+bench = false
+
+[[bench]]
+name = "format-time"
+harness = false
+
+[[bench]]
+name = "other-crates"
+harness = false
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+float_cmp = "allow"
