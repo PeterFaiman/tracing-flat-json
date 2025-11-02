@@ -1,5 +1,7 @@
 # `tracing-flat-json`
 
+A simple [`tracing_subscriber::Layer`] emitting newline-delimited JSON, with
+all event and span fields flattened onto the top level JSON object. Similar
 to combining the [`json-subscriber`] options [`with_flattened_event`] and
 [`with_top_level_flattened_span_list`], without the caveats about duplicate
 fields noted in the documentation for those options.
