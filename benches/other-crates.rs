@@ -26,7 +26,7 @@ fn two_field_spans() {
     let _g1 = info_span!("test span 1", test_field_1 = "test value 1", test_field_5 = "test value 5").entered();
     let _g2 = info_span!("test span 2", test_field_2 = "test value 2", test_field_6 = "test value 6").entered();
     let _g3 = info_span!("test span 3", test_field_3 = "test value 3", test_field_7 = "test value 7").entered();
-    let _g3 = info_span!("test span 4", test_field_4 = "test value 4", test_field_8 = "test value 8").entered();
+    let _g4 = info_span!("test span 4", test_field_4 = "test value 4", test_field_8 = "test value 8").entered();
     info!(event_field_1 = "event value 1", event_field_2 = "event value 2", "test event");
 }
 
