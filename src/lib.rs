@@ -994,4 +994,25 @@ mod tests {
         assert_eq!(json["ninf32"].as_str().unwrap(), "-inf");
         assert_eq!(json["ninf64"].as_str().unwrap(), "-inf");
     }
+
+    #[test]
+    fn large_integer() {
+        let (_dispatch, writer) = mock_subscriber();
+        let max_safe = MAX_SAFE_INTEGER;
+        let min_safe = MIN_SAFE_INTEGER;
+        let max_representable = max_safe + 1;
+        let min_representable = min_safe - 1;
+        info!(max_safe, min_safe, max_representable, min_representable);
+        let json = writer.read_json();
+        assert_eq!(json["max_safe"].as_i64().unwrap(), max_safe);
+        assert_eq!(json["min_safe"].as_i64().unwrap(), min_safe);
+        assert_eq!(
+            json["max_representable"].as_str().unwrap(),
+            max_representable.to_string()
+        );
+        assert_eq!(
+            json["min_representable"].as_str().unwrap(),
+            min_representable.to_string()
+        );
+    }
 }
