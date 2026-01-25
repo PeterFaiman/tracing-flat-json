@@ -166,6 +166,21 @@ trait FlatJsonRecorder {
             self.record_value(field, s);
         }
     }
+
+    #[inline]
+    fn record_float(&mut self, field: &Field, value: f64) {
+        if value.is_finite() {
+            self.record_value(field, value);
+        } else if value.is_nan() {
+            self.record_value(field, "NaN");
+        } else if value == f64::INFINITY {
+            self.record_value(field, "inf");
+        } else if value == f64::NEG_INFINITY {
+            self.record_value(field, "-inf");
+        } else {
+            unreachable!("floats must be finite, NaN, or infinite");
+        }
+    }
 }
 
 // Unlikely serde_json will ever change the default formatter, but 1 object per
@@ -214,7 +229,7 @@ struct FlatJsonVisitor<T: FlatJsonRecorder>(T);
 impl<T: FlatJsonRecorder> Visit for FlatJsonVisitor<T> {
     #[inline]
     fn record_f64(&mut self, field: &Field, value: f64) {
-        self.0.record_value(field, value);
+        self.0.record_float(field, value);
     }
     #[inline]
     fn record_i64(&mut self, field: &Field, value: i64) {
@@ -959,5 +974,24 @@ mod tests {
             println!("{json}");
             assert_eq!(json["trace_id"].as_str().unwrap(), fixed_trace_id);
         }
+    }
+
+    #[test]
+    fn float_nan_inf() {
+        let (_dispatch, writer) = mock_subscriber();
+        let nan32 = f32::NAN;
+        let nan64 = f64::NAN;
+        let inf32 = f32::INFINITY;
+        let inf64 = f64::INFINITY;
+        let ninf32 = f32::NEG_INFINITY;
+        let ninf64 = f64::NEG_INFINITY;
+        info!(nan32, nan64, inf32, inf64, ninf32, ninf64);
+        let json = writer.read_json();
+        assert_eq!(json["nan32"].as_str().unwrap(), "NaN");
+        assert_eq!(json["nan64"].as_str().unwrap(), "NaN");
+        assert_eq!(json["inf32"].as_str().unwrap(), "inf");
+        assert_eq!(json["inf64"].as_str().unwrap(), "inf");
+        assert_eq!(json["ninf32"].as_str().unwrap(), "-inf");
+        assert_eq!(json["ninf64"].as_str().unwrap(), "-inf");
     }
 }
