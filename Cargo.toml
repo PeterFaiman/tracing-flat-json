@@ -1,6 +1,6 @@
 [package]
 name = "tracing-flat-json"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 # Earliest supporting expect annotation.
 rust-version = "1.81.0"

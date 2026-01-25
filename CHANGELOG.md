@@ -1,4 +1,4 @@
-# Unreleased
+# 0.1.1 (January 25, 2026)
 
 ## Fixed
 
